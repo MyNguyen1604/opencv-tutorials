@@ -1,0 +1,73 @@
+>>> import numpy as np
+>>> import cv2 as cv
+
+>>> img = cv.imread('dog.jpg') 
+#img la ma tran hang cot, moi phan tu la mot ma tran 3 cot the hien gia tri [B, G, R] ([0, 1, 2])
+
+##Accessing and modyfying pixel values
+
+>>> px = img[100,100] #Lay gia tri px tai hang 100, cot 100 cua ma tran anh
+>>> print( px )
+
+>>> blue = img[100,100,0] #Chi lay gia tri px xanh [row, column, channel]
+
+>>> img[100,100] = [255, 255, 255] #Modifying px value
+
+##A better way for individual pixel access, using array.item() and array.itemset() function. However, they always return a scalar (mot dai luong vo huong, tuc, chi tra ve mot gia tri, khong the tra ve mot mang gia tri [b ,g ,r])
+
+# accessing RED value
+
+>>> img.item(10,10,2)
+# modifying RED value
+
+>>> img.itemset((10,10,2),100)
+
+##Acessing image properties
+#Image properties include number of rows, columns and channels, type of image data, number of pixels etc
+#The shape of an image is accessed by img.shape. It returns a tuple of (mot bo) number of rows, columns, and channels (if image is color) (Kenh hay channels trong image la gi?? Do la 3 kenh B, G, R)
+
+>>> print img.shape
+(150, 240, 3) #150 rows, 240 columns and channels 3 (A tuple)
+
+#if an image is grayscale, the tuple returned contains only the number of rows and columns, so it is a good way to check an image is grayscale or corlor
+
+#Total number of pixels is accessed by img.size
+
+>>> print img.size
+108000 # Total pixels
+
+#Image datatype is obtained (thu duoc/ get) by img.dtype
+
+>>> print img.dtype
+uint8
+
+##img.dtype is very important while debugging because a large number of errors in OpenCV-Python code is caused by invalid datatype.
+
+##Image ROI (Region of Interest/ Vung quan tam)... Sometimes, you will have to play with a certain region of images. We have to set a ROI in image. It improves accuracy and performance (because we search in a small area rather than in a image)
+
+>>> ball = img[280:340, 330:390]
+>>> img[273:333, 100:160] = ball
+
+##Splitting and Merging image channels
+#Sometimes you will need to work separately on B,G,R channels of image. In this case, you need to split the BGR images to single channels. In other cases, you may need to join these individual channels to a BGR image.
+
+>>> b,g,r = cv.split(img)
+>>> img = cv.merge((b,g,r))
+
+Or:
+>>> b = img[:,:,0] #Lay tat ca phan tu thuoc kenh B
+
+>>> img[:,:,2] = 0 #Set tat ca px do thanh 0
+
+## Image addition
+# We can add two images by cv.add() function or simply by numpy operation, res = img1 + img2. 
+#Note: both images should be of same depth and type or second image can just be a scalar value
+#There is a difference between OpenCV addition and Numpy addition. OpenCV addition is a saturated operation while Numpy addition is a modulo operation.
+
+>>> x = np.uint8([250])
+>>> y = np.uint8([10])
+>>> print( cv.add(x,y) ) # 250+10 = 260 => 255 # Saturated operation (Lay gia tri lon nhat cua so co the dat duoc khi so do vuot qua gia tri max quy dinh do)
+[[255]]
+>>> print( x+y )          # 250+10 = 260 % 256 = 4 # Modulo (Nhu su tran bit)
+[4]
+
